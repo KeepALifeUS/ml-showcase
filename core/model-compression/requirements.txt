@@ -1,0 +1,43 @@
+# Core ML frameworks
+torch>=2.0.0
+torchvision>=0.15.0
+tensorflow>=2.13.0
+
+# Scientific computing
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+scipy>=1.11.0
+
+# Visualization and monitoring
+matplotlib>=3.7.0
+seaborn>=0.12.0
+plotly>=5.15.0
+tensorboard>=2.13.0
+
+# Model export and optimization
+onnx>=1.14.0
+onnxruntime>=1.15.0
+
+# Utilities
+tqdm>=4.65.0
+psutil>=5.9.0
+pynvml>=11.5.0
+
+# ML utilities and experiment tracking
+transformers>=4.30.0
+accelerate>=0.20.0
+datasets>=2.13.0
+wandb>=0.15.0
+mlflow>=2.5.0
+
+# Data validation and CLI
+pydantic>=2.0.0
+typer>=0.9.0
+rich>=13.4.0
+loguru>=0.7.0
+
+# Async and HTTP
+httpx>=0.24.0
+aiofiles>=23.1.0
+asyncio-mqtt>=0.13.0

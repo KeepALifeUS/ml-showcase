@@ -1,0 +1,278 @@
+version: '3.8'
+
+services:
+  # Social Media Sentiment Analyzer API
+  sentiment-api:
+    build:
+      context: .
+      target: production
+    container_name: sentiment-api
+    ports:
+      - '8004:8004'
+      - '9090:9090' # Prometheus metrics
+    environment:
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: crypto_sentiment
+      DB_USER: postgres
+      DB_PASSWORD: ${DB_PASSWORD:-password123}
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+
+      # API Settings
+      API_HOST: 0.0.0.0
+      API_PORT: 8004
+      WORKERS: ${API_WORKERS:-4}
+
+      # Security
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key-change-in-production}
+
+      # Social Media APIs
+      TWITTER_BEARER_TOKEN: ${TWITTER_BEARER_TOKEN:-}
+      TWITTER_API_KEY: ${TWITTER_API_KEY:-}
+      TWITTER_API_SECRET: ${TWITTER_API_SECRET:-}
+
+      REDDIT_CLIENT_ID: ${REDDIT_CLIENT_ID:-}
+      REDDIT_CLIENT_SECRET: ${REDDIT_CLIENT_SECRET:-}
+      REDDIT_USERNAME: ${REDDIT_USERNAME:-}
+      REDDIT_PASSWORD: ${REDDIT_PASSWORD:-}
+
+      TELEGRAM_API_ID: ${TELEGRAM_API_ID:-}
+      TELEGRAM_API_HASH: ${TELEGRAM_API_HASH:-}
+      TELEGRAM_PHONE: ${TELEGRAM_PHONE:-}
+
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN:-}
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+
+      # ML Settings
+      ML_DEVICE: ${ML_DEVICE:-auto}
+      ML_BATCH_SIZE: ${ML_BATCH_SIZE:-32}
+      ML_USE_GPU: ${ML_USE_GPU:-false}
+
+      # Performance
+      REALTIME_BATCH_SIZE: ${REALTIME_BATCH_SIZE:-32}
+      REALTIME_MAX_QUEUE_SIZE: ${REALTIME_MAX_QUEUE_SIZE:-1000}
+
+      # Monitoring
+      PROMETHEUS_PORT: 9090
+      ENABLE_TRACING: true
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+    volumes:
+      - sentiment_models:/app/models
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8004/health']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: sentiment-postgres
+    environment:
+      POSTGRES_DB: crypto_sentiment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-password123}
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8 --locale=C'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - '5432:5432'
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d crypto_sentiment']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: sentiment-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    ports:
+      - '6379:6379'
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', '--raw', 'incr', 'ping']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Kafka (for streaming)
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: sentiment-kafka
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    ports:
+      - '9092:9092'
+    depends_on:
+      - zookeeper
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+
+  # Zookeeper (for Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: sentiment-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+    ports:
+      - '2181:2181'
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+
+  # Prometheus (Monitoring)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: sentiment-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - '9091:9090'
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+
+  # Grafana (Dashboards)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: sentiment-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - '3001:3000'
+    depends_on:
+      - prometheus
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+
+  # Nginx (Load Balancer & Proxy)
+  nginx:
+    image: nginx:alpine
+    container_name: sentiment-nginx
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - sentiment-api
+    networks:
+      - sentiment-network
+    restart: unless-stopped
+
+  # Development services
+  # Jupyter Notebook for analysis
+  jupyter:
+    build:
+      context: .
+      target: development
+    container_name: sentiment-jupyter
+    command: jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+    ports:
+      - '8888:8888'
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-sentiment123}
+    volumes:
+      - .:/app
+      - jupyter_data:/root/.jupyter
+    networks:
+      - sentiment-network
+    profiles:
+      - development
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: sentiment-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+    networks:
+      - sentiment-network
+    profiles:
+      - development
+
+# Volumes
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  kafka_data:
+    driver: local
+  zookeeper_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+  sentiment_models:
+    driver: local
+  jupyter_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+# Networks
+networks:
+  sentiment-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

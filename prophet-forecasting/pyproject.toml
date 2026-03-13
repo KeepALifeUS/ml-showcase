@@ -1,0 +1,206 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-prophet-forecasting"
+version = "5.0.0"
+description = "Enterprise-grade Prophet Forecasting System for Cryptocurrency Predictions with enterprise patterns"
+authors = [
+    {name = "ML Team", email = "team@example.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+keywords = [
+    "crypto",
+    "trading", 
+    "forecasting",
+    "prophet",
+    "time-series",
+    "machine-learning",
+    "predictions",
+    "ml-framework",
+    "enterprise"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+requires-python = ">=3.9"
+dependencies = [
+    # Core Prophet dependencies
+    "prophet>=1.1.5",
+    "pystan>=3.5.0",
+    "cmdstanpy>=1.1.0",
+    
+    # Data processing
+    "pandas>=2.1.0",
+    "numpy>=1.24.0",
+    "scipy>=1.11.0",
+    
+    # API framework
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "websockets>=12.0",
+    
+    # Data validation
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.0.0",
+    
+    # Machine Learning
+    "scikit-learn>=1.3.0",
+    "optuna>=3.4.0",
+    "bayesian-optimization>=1.4.0",
+    
+    # Data storage
+    "redis>=5.0.0",
+    "psycopg2-binary>=2.9.0",
+    "sqlalchemy>=2.0.0",
+    
+    # Visualization
+    "plotly>=5.17.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.13.0",
+    
+    # Utilities
+    "python-dateutil>=2.8.0",
+    "pytz>=2023.3",
+    "requests>=2.31.0",
+    "aiohttp>=3.9.0",
+    
+    # Monitoring
+    "prometheus-client>=0.19.0",
+    "structlog>=23.2.0",
+    
+    # Configuration
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.12.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.10.0",
+    "pylint>=3.0.0",
+    "mypy>=1.6.0",
+    "pre-commit>=3.5.0",
+    "jupyterlab>=4.0.0",
+    "ipykernel>=6.25.0"
+]
+docs = [
+    "sphinx>=7.0.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "myst-parser>=2.0.0"
+]
+gpu = [
+    "torch>=2.0.0",
+    "tensorflow>=2.13.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/KeepALifeUS"
+Documentation = "https://example.com"
+Repository = "https://github.com/KeepALifeUS"
+"Bug Tracker" = "https://github.com/KeepALifeUS"
+
+[project.scripts]
+prophet-forecast = "ml_prophet_forecasting.cli:main"
+prophet-train = "ml_prophet_forecasting.training:train_model"
+prophet-predict = "ml_prophet_forecasting.prediction:predict"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"ml_prophet_forecasting" = ["config/*.yaml", "models/*.pkl"]
+
+# Code quality
+[tool.black]
+line-length = 88
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.pylint]
+max-line-length = 88
+disable = [
+    "C0103",  # Invalid name
+    "R0903",  # Too few public methods
+    "W0613",  # Unused argument
+]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --strict-config"
+testpaths = ["tests"]
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "gpu: marks tests that require GPU",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\bProtocol\):",
+    "@(abc\.)?abstractmethod",
+]

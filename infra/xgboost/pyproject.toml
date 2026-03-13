@@ -1,0 +1,226 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-xgboost"
+version = "1.0.0"
+description = "Enterprise XGBoost implementation with SHAP/LIME interpretability and feature engineering"
+authors = [
+    {name = "ML XGBoost Contributors"}
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["xgboost", "machine-learning", "time-series", "shap", "feature-engineering", "interpretability"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    # Core ML libraries
+    "xgboost>=2.0.0",
+    "scikit-learn>=1.5.0",
+    "pandas>=2.1.0",
+    "numpy>=1.24.0",
+    
+    # Hyperparameter optimization
+    "optuna>=3.4.0",
+    "hyperopt>=0.2.7",
+    "bayesian-optimization>=1.4.0",
+    
+    # Model interpretability
+    "shap>=0.43.0",
+    "lime>=0.2.0",
+    "eli5>=0.13.0",
+    "pdpbox>=0.2.0",
+    
+    # Time series utilities
+    "ta-lib>=0.4.25",
+    "ta>=0.10.2",
+    "tsfresh>=0.20.0",
+    "statsmodels>=0.14.0",
+    "pmdarima>=2.0.0",
+    
+    # Visualization
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "plotly>=5.17.0",
+    "dash>=2.14.0",
+    "dash-bootstrap-components>=1.5.0",
+    
+    # Fast computing
+    "numba>=0.58.0",
+    "joblib>=1.3.0",
+    "multiprocess>=0.70.0",
+    
+    # API and web
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "pydantic>=2.5.0",
+    "httpx>=0.25.0",
+    
+    # Data storage and caching
+    "redis>=5.0.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    
+    # Utilities
+    "loguru>=0.7.0",
+    "rich>=13.6.0",
+    "typer>=0.9.0",
+    "python-dotenv>=1.0.0",
+    "pyyaml>=6.0",
+    "jsonschema>=4.19.0",
+    "psutil>=5.9.0",
+    
+    # Testing and validation
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "hypothesis>=6.88.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.9.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.0",
+    "pre-commit>=3.5.0",
+    "jupyter>=1.0.0",
+    "notebook>=7.0.0",
+    "ipywidgets>=8.1.0",
+]
+
+gpu = [
+    "cudf-cu11>=23.10.0",
+    "cuml-cu11>=23.10.0",
+    "cupy-cuda11x>=12.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/KeepALifeUS/ml-xgboost"
+Repository = "https://github.com/KeepALifeUS/ml-xgboost"
+Issues = "https://github.com/KeepALifeUS/ml-xgboost/issues"
+
+[project.scripts]
+xgb-train = "ml_xgboost.cli:train"
+xgb-predict = "ml_xgboost.cli:predict"
+xgb-tune = "ml_xgboost.cli:tune"
+xgb-explain = "ml_xgboost.cli:explain"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["ml_xgboost*"]
+
+[tool.setuptools.package-data]
+ml_xgboost = ["py.typed", "*.json", "*.yaml", "*.yml"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311", "py312"]
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88
+known_first_party = ["ml_xgboost"]
+known_third_party = [
+    "xgboost", "sklearn", "pandas", "numpy", "optuna", "shap", 
+    "fastapi", "pydantic", "loguru", "rich"
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "xgboost.*",
+    "shap.*",
+    "optuna.*",
+    "ta.*",
+    "talib.*",
+    "tsfresh.*",
+    "plotly.*",
+    "dash.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--disable-warnings",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "-v",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests as requiring GPU (deselect with '-m \"not gpu\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__init__.py",
+    "*/conftest.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if __name__ == .__main__.:",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+]

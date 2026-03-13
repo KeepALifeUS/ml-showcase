@@ -1,0 +1,29 @@
+# Core Dependencies for ML Common Package
+# Production-ready mathematical libraries
+
+# Core computational libraries
+numpy>=1.21.0,<2.0.0
+pandas>=1.3.0,<3.0.0
+scikit-learn>=1.0.0,<2.0.0
+scipy>=1.7.0,<2.0.0
+
+# Technical Analysis
+ta-lib>=0.4.0,<1.0.0
+
+# Performance optimization
+numba>=0.56.0,<1.0.0
+typing-extensions>=4.0.0
+
+# Data validation and type safety
+pydantic>=1.10.0,<3.0.0
+
+# Logging and monitoring
+loguru>=0.6.0,<1.0.0
+
+# Configuration management
+python-dotenv>=0.19.0,<2.0.0
+
+# Optional performance enhancements (install manually if needed)
+# cupy-cuda11x>=11.0.0 # GPU acceleration (CUDA 11.x)
+# numexpr>=2.8.0 # Fast numerical expression evaluator
+# bottleneck>=1.3.0 # Fast NumPy array functions

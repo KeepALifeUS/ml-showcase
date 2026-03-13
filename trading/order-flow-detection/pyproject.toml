@@ -1,0 +1,256 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-order-flow-detection"
+version = "1.0.0"
+description = "Enterprise ML Order Flow Pattern Detection System with enterprise patterns"
+authors = [
+    {name = "ML Team", email = "team@example.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+]
+
+dependencies = [
+    # Core ML frameworks
+    "numpy>=1.24.0",
+    "pandas>=2.0.0,<3.0.0",
+    "scikit-learn>=1.3.0",
+    "tensorflow>=2.13.0",
+    "torch>=2.0.0",
+    "xgboost>=1.7.0",
+    "lightgbm>=4.0.0",
+    
+    # Deep Learning extensions
+    "transformers>=4.35.0",
+    "pytorch-lightning>=2.0.0",
+    "optuna>=3.4.0",
+    
+    # API and Web
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "websockets>=12.0",
+    "aiohttp>=3.9.0",
+    "grpcio>=1.59.0",
+    "grpcio-tools>=1.59.0",
+    
+    # Data processing
+    "polars>=0.19.0",
+    "pyarrow>=14.0.0",
+    "numba>=0.58.0",
+    "bottleneck>=1.3.0",
+    
+    # Database and Cache
+    "asyncpg>=0.29.0",
+    "aioredis>=2.0.0",
+    "sqlalchemy[asyncio]>=2.0.0",
+    
+    # Trading and Financial
+    "ccxt>=4.1.0",
+    "ta-lib>=0.4.0",
+    "quantlib>=1.32.0",
+    
+    # Visualization
+    "plotly>=5.17.0",
+    "dash>=2.14.0",
+    "streamlit>=1.28.0",
+    "matplotlib>=3.8.0",
+    "seaborn>=0.13.0",
+    
+    # Validation and Config
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.1.0",
+    "dynaconf>=3.2.0",
+    
+    # Logging and Monitoring
+    "structlog>=23.2.0",
+    "opentelemetry-api>=1.21.0",
+    "opentelemetry-sdk>=1.21.0",
+    "prometheus-client>=0.19.0",
+    
+    # Utilities
+    "click>=8.1.0",
+    "rich>=13.7.0",
+    "tqdm>=4.66.0",
+    "joblib>=1.3.0",
+    "schedule>=1.2.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.0",
+    "pytest-xdist>=3.3.0",
+    "hypothesis>=6.88.0",
+    "factory-boy>=3.3.0"
+]
+
+quality = [
+    "mypy>=1.7.0",
+    "ruff>=0.1.6",
+    "black>=23.10.0",
+    "isort>=5.12.0",
+    "bandit[toml]>=1.7.0",
+    "safety>=2.3.0",
+    "pre-commit>=3.5.0"
+]
+
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.4.0",
+    "mkdocstrings[python]>=0.24.0"
+]
+
+performance = [
+    "line-profiler>=4.1.0",
+    "memory-profiler>=0.61.0",
+    "py-spy>=0.3.0",
+    "scalene>=1.5.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/KeepALifeUS"
+Documentation = "https://example.com"
+Repository = "https://github.com/KeepALifeUS"
+Issues = "https://github.com/KeepALifeUS"
+
+[project.scripts]
+ml-order-flow = "src.cli:main"
+order-flow-train = "src.ml.train_models:main"
+order-flow-backtest = "src.backtesting.flow_backtester:main"
+order-flow-api = "src.api.rest_api:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-report=html",
+    "--cov-report=term-missing",
+    "--cov-fail-under=80"
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "ml: marks tests that require ML models",
+    "api: marks tests that require API server"
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+no_implicit_reexport = true
+namespace_packages = true
+show_error_codes = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+    "ccxt.*",
+    "ta.*",
+    "quantlib.*",
+    "dash.*",
+    "plotly.*"
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "UP", # pyupgrade
+    "N",  # pep8-naming
+    "S",  # bandit
+    "T20", # flake8-print
+    "SIM", # flake8-simplify
+    "LOG", # flake8-logging
+]
+
+ignore = [
+    "S101",   # Use of assert detected
+    "S311",   # Standard pseudo-random generators are not suitable for security
+    "B008",   # Do not perform function calls in argument defaults
+    "C901",   # Too complex function
+]
+
+[tool.ruff.per-file-ignores]
+"tests/**/*.py" = ["S101", "S105", "S106", "S107"]
+"src/ml/**/*.py" = ["N803", "N806"]  # Allow lowercase variable names in ML code
+
+[tool.ruff.isort]
+known-first-party = ["src"]
+force-single-line = true
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.bandit]
+exclude_dirs = ["tests", "build", "dist"]
+skips = ["B101", "B601"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/migrations/*"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:"
+]

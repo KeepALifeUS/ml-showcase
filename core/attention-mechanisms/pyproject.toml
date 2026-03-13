@@ -1,0 +1,195 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-attention-mechanisms"
+version = "1.0.0"
+description = "Enterprise Attention Mechanisms for Crypto Trading Bot v5.0 - High-performance transformer architectures"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+    {name = "ML Team", email = "team@example.com"}
+]
+keywords = [
+    "attention-mechanisms", "transformers", "crypto", "trading", 
+    "machine-learning", "deep-learning", "neural-networks", "time-series"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial",
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    # Core Deep Learning & Transformers
+    "torch>=2.1.0",
+    "pytorch-lightning>=2.1.0",
+    "transformers>=4.35.0",
+    "torchmetrics>=1.2.0",
+    "flash-attn>=2.3.0",
+    "xformers>=0.0.22",
+    
+    # Core ML & Scientific Computing
+    "scikit-learn>=1.3.0",
+    "numpy>=1.24.0",
+    "scipy>=1.11.0",
+    
+    # Data Processing & Time Series
+    "pandas>=2.1.0",
+    "polars>=0.19.0",
+    "pyarrow>=14.0.0",
+    "ta>=0.10.2",
+    "pandas-ta>=0.3.14b",
+    
+    # Optimization & Performance
+    "numba>=0.58.0",
+    "einops>=0.7.0",  # Tensor operations
+    "apex-linux>=23.8.0; platform_system=='Linux'",  # Mixed precision
+    
+    # Visualization & Monitoring
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "plotly>=5.17.0",
+    "wandb>=0.16.0",
+    "tensorboard>=2.15.0",
+    
+    # Utilities & Configuration
+    "pydantic>=2.4.0",
+    "pydantic-settings>=2.0.0",
+    "loguru>=0.7.0",
+    "rich>=13.6.0",
+    "typer>=0.9.0",
+    "tqdm>=4.66.0",
+    "omegaconf>=2.3.0",
+    "hydra-core>=1.3.0",
+    
+    # Memory & Caching
+    "lru-dict>=1.2.0",
+    "diskcache>=5.6.0",
+    "joblib>=1.3.0",
+    
+    # Performance Profiling
+    "memory-profiler>=0.61.0",
+    "line-profiler>=4.1.0",
+    
+    # Testing & Quality
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "pytest-benchmark>=4.0.0",
+    "black>=23.9.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+    "pre-commit>=3.4.0",
+    "notebook>=7.0.0",
+    "ipywidgets>=8.1.0",
+]
+
+gpu = [
+    "torch[cuda]>=2.1.0",
+    "cupy-cuda12x>=12.2.0",
+    "cuml-cu12>=23.10.0",
+    "cudf-cu12>=23.10.0",
+    "triton>=2.1.0",  # Flash attention GPU kernels
+]
+
+experimental = [
+    "mamba-ssm>=1.2.0",  # State space models
+    "rotary-embedding-torch>=0.5.0",  # RoPE embeddings
+    "local-attention>=1.9.0",  # Local attention patterns
+]
+
+[project.urls]
+"Homepage" = "https://github.com/your-org/crypto-trading-bot-v5"
+"Bug Reports" = "https://github.com/your-org/crypto-trading-bot-v5/issues"
+"Source" = "https://github.com/your-org/crypto-trading-bot-v5/tree/main/packages/ml-attention-mechanisms"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml", "*.json", "*.toml", "*.txt"]
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+  | __pycache__
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+known_third_party = ["torch", "numpy", "pandas", "transformers"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-v --tb=short --cov=src --cov-report=term-missing --cov-report=html --benchmark-skip"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "gpu: marks tests as requiring GPU",
+    "benchmark: marks performance benchmark tests",
+    "integration: marks integration tests",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/benchmarks/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]

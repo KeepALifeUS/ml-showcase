@@ -1,0 +1,258 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-explainable-ai"
+version = "1.0.0"
+description = "Comprehensive Explainable AI Framework for Crypto Trading Bot v5.0"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "ML Team", email = "team@example.com"}
+]
+keywords = [
+    "explainable-ai", "xai", "machine-learning", "interpretability",
+    "shap", "lime", "crypto", "trading", "model-explanation",
+    "transparency", "compliance", 
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+requires-python = ">=3.10"
+dependencies = [
+    # Core ML and XAI
+    "scikit-learn>=1.3.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "shap>=0.43.0",
+    "lime>=0.2.0",
+    "eli5>=0.13.0",
+    "anchor-exp>=0.0.2.0",
+    
+    # Advanced interpretability
+    "alibi>=0.9.0",
+    "interpret>=0.4.0",
+    "captum>=0.6.0",
+    "dalex>=1.7.0",
+    
+    # Visualization and dashboards
+    "plotly>=5.17.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "bokeh>=3.3.0",
+    "dash>=2.14.0",
+    "streamlit>=1.28.0",
+    
+    # Deep learning frameworks
+    "torch>=2.0.0",
+    "tensorflow>=2.13.0",
+    "keras>=2.13.0",
+    
+    # Data processing and utilities
+    "pydantic>=2.4.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "redis>=5.0.0",
+    "celery>=5.3.0",
+    "joblib>=1.3.0",
+    
+    # Crypto and trading specific
+    "ccxt>=4.1.0",
+    "ta-lib>=0.4.0",
+    "yfinance>=0.2.0",
+    
+    # Configuration and logging
+    "omegaconf>=2.3.0",
+    "hydra-core>=1.3.0",
+    "structlog>=23.2.0",
+    "rich>=13.6.0",
+    
+    # Testing and quality
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "hypothesis>=6.88.0",
+    
+    # Compliance and reporting
+    "jinja2>=3.1.0",
+    "weasyprint>=60.0",
+    "python-docx>=0.8.11",
+    "openpyxl>=3.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.9.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.0",
+    "isort>=5.12.0",
+    "pre-commit>=3.5.0",
+    "bandit>=1.7.0",
+    "safety>=2.3.0",
+]
+docs = [
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-autoapi>=3.0.0",
+    "myst-parser>=2.0.0",
+]
+gpu = [
+    "torch[cuda]>=2.0.0",
+    "tensorflow[gpu]>=2.13.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/KeepALifeUS"
+Repository = "https://github.com/KeepALifeUS"
+Documentation = "https://example.com"
+"Bug Tracker" = "https://github.com/KeepALifeUS"
+
+[project.scripts]
+xai = "src.cli:main"
+explain = "src.explainers.cli:main"
+dashboard = "src.visualization.explanation_dashboard:main"
+
+[tool.setuptools.packages.find]
+where = ["python"]
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-branch",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=80"
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests", 
+    "slow: Slow tests",
+    "gpu: Tests requiring GPU",
+    "compliance: Compliance and regulatory tests"
+]
+filterwarnings = [
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning"
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 88
+known_first_party = ["src"]
+known_third_party = ["pandas", "numpy", "sklearn", "shap", "lime"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "shap.*",
+    "lime.*",
+    "eli5.*",
+    "anchor.*",
+    "alibi.*",
+    "interpret.*",
+    "captum.*",
+    "dalex.*",
+    "ccxt.*",
+    "ta.*"
+]
+ignore_missing_imports = true
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203", "W503", "E501"]
+per-file-ignores = [
+    "__init__.py:F401",
+    "test_*.py:S101"
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    "dist",
+    "build",
+    ".eggs",
+    "*.egg-info",
+    ".venv",
+    ".env"
+]
+
+[tool.bandit]
+exclude_dirs = ["tests", "test_*.py"]
+skips = ["B101", "B601"]
+
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__init__.py",
+    "*/conftest.py"
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod"
+]

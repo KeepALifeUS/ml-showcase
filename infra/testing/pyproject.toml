@@ -1,0 +1,279 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-testing"
+version = "1.0.0"
+description = "Comprehensive ML Testing Framework for Production ML Systems"
+authors = [
+    {name = "ML Team", email = "team@example.com"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+keywords = [
+    "ml", "testing", "machine-learning", "crypto", "trading", 
+    "validation", "benchmarking", "pytest", "enterprise"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Office/Business :: Financial :: Investment"
+]
+
+# Core dependencies
+dependencies = [
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "scikit-learn>=1.3.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "pytest-benchmark>=4.0.0",
+    "pytest-mock>=3.11.0",
+    "pydantic>=2.5.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "plotly>=5.17.0",
+    "psutil>=5.9.0",
+    "memory-profiler>=0.61.0",
+    "py-spy>=0.3.0",
+    "mlflow>=2.8.0",
+    "tensorboard>=2.15.0",
+    "scipy>=1.11.0",
+    "joblib>=1.3.0",
+    "tqdm>=4.66.0",
+    "requests>=2.31.0",
+    "pyyaml>=6.0.0",
+    "python-dotenv>=1.0.0",
+    "loguru>=0.7.0",
+    "structlog>=23.2.0",
+    "rich>=13.7.0",
+    "typer>=0.9.0",
+    "httpx>=0.25.0",
+    "faker>=20.1.0",
+    "hypothesis>=6.88.0"
+]
+
+# Optional dependencies for ML frameworks
+[project.optional-dependencies]
+# Deep Learning frameworks
+torch = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "torchaudio>=2.1.0"
+]
+tensorflow = [
+    "tensorflow>=2.14.0",
+    "tensorflow-probability>=0.22.0"
+]
+xgboost = [
+    "xgboost>=1.7.0",
+    "lightgbm>=4.1.0",
+    "catboost>=1.2.0"
+]
+
+# Time series specific
+timeseries = [
+    "prophet>=1.1.4",
+    "statsmodels>=0.14.0",
+    "arch>=6.2.0",
+    "pmdarima>=2.0.4",
+    "ta-lib>=0.4.28"
+]
+
+# GPU acceleration
+gpu = [
+    "cupy-cuda11x>=12.2.0",
+    "numba>=0.58.0"
+]
+
+# Development tools
+dev = [
+    "black>=23.9.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.0",
+    "pre-commit>=3.5.0",
+    "bandit>=1.7.5",
+    "safety>=2.3.0",
+    "autopep8>=2.0.4",
+    "pylint>=3.0.0"
+]
+
+# Documentation
+docs = [
+    "sphinx>=7.2.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "myst-parser>=2.0.0",
+    "sphinx-autodoc-typehints>=1.25.0"
+]
+
+# All extras
+all = [
+    "ml-testing[torch,tensorflow,xgboost,timeseries,gpu,dev,docs]"
+]
+
+[project.urls]
+Homepage = "https://github.com/KeepALifeUS/ml-testing"
+Repository = "https://github.com/KeepALifeUS/ml-testing.git"
+
+[project.scripts]
+ml-test = "ml_testing.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.yaml", "*.yml", "*.json", "*.toml"]
+
+# Black configuration
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+# isort configuration
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+line_length = 100
+known_first_party = ["ml_testing"]
+known_third_party = [
+    "numpy", "pandas", "sklearn", "matplotlib", "seaborn", 
+    "pytest", "pydantic", "mlflow", "torch", "tensorflow"
+]
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "matplotlib.*",
+    "seaborn.*",
+    "plotly.*",
+    "sklearn.*",
+    "mlflow.*",
+    "ta.*"
+]
+ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.4"
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--strict-config",
+    "--cov=src",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html:htmlcov",
+    "--cov-report=xml",
+    "--cov-fail-under=80"
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "gpu: marks tests that require GPU",
+    "ml: marks tests related to ML models",
+    "data: marks tests related to data processing",
+    "benchmark: marks performance benchmark tests",
+    "regression: marks regression tests"
+]
+filterwarnings = [
+    "error",
+    "ignore::UserWarning",
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning"
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*/test_*",
+    "*/__init__.py",
+    "*/conftest.py"
+]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod"
+]
+show_missing = true
+precision = 2
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+# Bandit security linter
+[tool.bandit]
+exclude_dirs = ["tests", "test_*"]
+skips = ["B101"]  # Skip assert_used test
+
+# Flake8 configuration
+[tool.flake8]
+max-line-length = 100
+extend-ignore = ["E203", "W503", "E501"]
+exclude = [
+    ".git",
+    "__pycache__",
+    "docs/source/conf.py",
+    "old",
+    "build",
+    "dist"
+]
+max-complexity = 10

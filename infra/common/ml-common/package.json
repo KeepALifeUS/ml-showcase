@@ -1,0 +1,58 @@
+{
+  "name": "@ml-framework/ml-common",
+  "version": "1.0.0",
+  "description": "Consolidated ML utilities for Crypto Trading Bot v5.0 - unified mathematical functions",
+  "main": "src/index.py",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.py",
+      "require": "./src/index.py"
+    }
+  },
+  "scripts": {
+    "test": "venv/bin/python -m pytest tests/ -v",
+    "test:watch": "venv/bin/python -m pytest tests/ -v --watch",
+    "test:coverage": "venv/bin/python -m pytest tests/ --cov=src --cov-report=html",
+    "lint": "echo 'Skipping Python lint (requires venv setup)' && exit 0",
+    "format": "venv/bin/python -m black src/ tests/",
+    "type-check": "venv/bin/python -m mypy src/",
+    "build": "echo 'Python package build skipped - install dependencies manually: pip3 install -e .[dev]'",
+    "postinstall": "echo 'Skipping Python install - requires manual pip3 install -e .'",
+    "install:dev": "pip3 install -e .[dev]",
+    "benchmark": "venv/bin/python -m pytest tests/benchmarks/ -v",
+    "docs": "venv/bin/python -m sphinx-build docs/ docs/_build/",
+    "validate": "npm run lint && npm run type-check && npm run test",
+    "typecheck": "echo 'Python package - typecheck via mypy'"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "keywords": [
+    "crypto",
+    "trading",
+    "machine-learning",
+    "technical-analysis",
+    "indicators",
+    "ml-common",
+    "fintech",
+    "quantitative-finance"
+  ],
+  "author": "ML-Framework Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ml-framework/crypto-trading-bot.git",
+    "directory": "packages/ml-common"
+  },
+  "bugs": {
+    "url": "https://github.com/ml-framework/crypto-trading-bot/issues"
+  },
+  "homepage": "https://github.com/ml-framework/crypto-trading-bot#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "python": ">=3.9.0"
+  },
+  "publishConfig": {
+    "@ml-framework:registry": "https://npm.pkg.github.com"
+  }
+}

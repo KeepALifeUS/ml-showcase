@@ -1,0 +1,179 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-nlp-sentiment"
+version = "1.0.0"
+description = "Enterprise-grade NLP Sentiment Analysis for Crypto Trading - enterprise integration"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "ML Team", email = "team@example.com"}
+]
+keywords = [
+    "nlp", "sentiment", "crypto", "trading", "bert", "transformers",
+    "machine-learning", "ml-framework", "enterprise", "fintech"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    # Core ML/NLP
+    "torch>=2.0.0",
+    "transformers>=4.33.0",
+    "tokenizers>=0.13.0",
+    "datasets>=2.14.0",
+    "scikit-learn>=1.3.0",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "scipy>=1.11.0",
+    
+    # NLP Specific
+    "spacy>=3.6.0",
+    "nltk>=3.8.0",
+    "textblob>=0.17.0",
+    "vaderSentiment>=3.3.2",
+    "langdetect>=1.0.9",
+    "googletrans>=4.0.0",
+    
+    # Deep Learning
+    "pytorch-lightning>=2.0.0",
+    "accelerate>=0.21.0",
+    "safetensors>=0.3.0",
+    "onnx>=1.14.0",
+    "onnxruntime>=1.15.0",
+    
+    # Feature Engineering
+    "gensim>=4.3.0",
+    "fasttext>=0.9.2",
+    "sentence-transformers>=2.2.0",
+    
+    # Explainability
+    "lime>=0.2.0.1",
+    "shap>=0.42.0",
+    "captum>=0.6.0",
+    
+    # API & Serving
+    "fastapi>=0.103.0",
+    "grpcio>=1.57.0",
+    "grpcio-tools>=1.57.0",
+    "websockets>=11.0.0",
+    "uvicorn[standard]>=0.23.0",
+    "torchserve>=0.8.0",
+    
+    # Data & Utils
+    "pydantic>=2.3.0",
+    "pydantic-settings>=2.0.0",
+    "redis>=4.6.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.11.0",
+    
+    # Monitoring & Observability
+    "prometheus-client>=0.17.0",
+    "structlog>=23.1.0",
+    "opentelemetry-api>=1.19.0",
+    "opentelemetry-sdk>=1.19.0",
+    
+    # Testing
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.11.0",
+    "hypothesis>=6.82.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.7.0",
+    "isort>=5.12.0",
+    "flake8>=6.0.0",
+    "mypy>=1.5.0",
+    "pre-commit>=3.3.0",
+    "jupyter>=1.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+]
+gpu = [
+    "torch[cuda]>=2.0.0",
+    "nvidia-ml-py>=12.535.0",
+]
+distributed = [
+    "ray[tune]>=2.6.0",
+    "horovod>=0.28.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/KeepALifeUS"
+Documentation = "https://ml-nlp-sentiment.readthedocs.io/"
+Repository = "https://github.com/KeepALifeUS"
+Issues = "https://github.com/KeepALifeUS"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.yaml", "*.yml", "*.txt", "*.md"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--verbose",
+    "--tb=short",
+    "--strict-markers",
+    "--disable-warnings",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "gpu: marks tests that require GPU",
+]
