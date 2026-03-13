@@ -91,7 +91,7 @@ ml-showcase/
 └── prophet-forecasting/      # Time series forecasting
 ```
 
-Each module is self-contained with its own `README.md`, requirements, and tests.
+Each module is self-contained with its own dependencies and tests.
 
 ## License
 
